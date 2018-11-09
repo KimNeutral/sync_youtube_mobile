@@ -1,12 +1,13 @@
 import 'package:sync_youtube_mobile/model/model.dart';
+import 'package:sync_youtube_mobile/model/user.dart';
 
 class Youtube extends Model{
-  String id;
-  String user;
+  int id;
+  User user;
   String title;
   String url;
   String thumbnail;
-  String seconds;
+  int seconds;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -15,9 +16,10 @@ class Youtube extends Model{
   });
 
   factory Youtube.fromJson(Map<String,dynamic> json){
-    return Youtube(
+    print(json);
+    var item = Youtube(
       id: json['id'],
-      user: json['user'],
+      user: User.fromJson(json['user']),
       title: json['title'],
       url: json['url'],
       thumbnail: json['thumbnail'],
@@ -25,6 +27,8 @@ class Youtube extends Model{
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
+
+    return item;
   }
 
   Map<String, dynamic> toJson() => {
@@ -37,4 +41,11 @@ class Youtube extends Model{
     'createdAt': createdAt,
     'updatedAt': updatedAt,
   };
+
+  @override
+  String toString() {
+    return 'Youtube{id: $id, user: $user, title: $title, url: $url, thumbnail: $thumbnail, seconds: $seconds, createdAt: $createdAt, updatedAt: $updatedAt}';
+  }
+
+
 }
