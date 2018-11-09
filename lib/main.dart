@@ -123,17 +123,28 @@ class _MainPageState extends State<MainPage> {
         return embedDivider(
           InkWell(
             child: Container(
-              height: 85.0,
-              padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+              height: 90.0,
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
               child: Row(
                 children: <Widget>[
                   getThumbnail(item.thumbnail),
                   Padding(padding: EdgeInsets.only(right: 20.0)),
                   Flexible(
                     fit: FlexFit.loose,
-                    child: Text(
-                      item.title + " - $formattedSecond",
-                      overflow: TextOverflow.fade,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          item.title,
+                          overflow: TextOverflow.fade,
+                          maxLines: 2,
+                        ),
+                        Text(
+                          formattedSecond,
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ]
                     )
                   ),
                 ],
