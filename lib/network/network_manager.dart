@@ -49,9 +49,9 @@ class NetworkManager {
     return responseData;
   }
 
-  Future<Response> _request(String path, String method, {data, TokenInfo tokenInfo, Map<String, dynamic> headers = const {}}) async {
+  Future<Response> _request(String path, String method, {data, TokenInfo tokenInfo, Map<String, dynamic> headers}) async {
     if(headers == null) headers = {};
-    if(tokenInfo != null) headers["Authorization"] = tokenInfo.token;
+    if(tokenInfo != null) headers["Authorization"] = tokenInfo.getTokenWithPrefix();
     
     var opt = Options(
       method: method,
