@@ -1,9 +1,10 @@
+import 'package:sync_youtube_mobile/model/token_info.dart';
 import 'package:sync_youtube_mobile/network/data/base_data.dart';
 
 class LoginData {
   String message;
   List<SYError> errors;
-  String data;
+  TokenInfo data;
 
   LoginData({this.message, this.errors, this.data});
 
@@ -11,9 +12,8 @@ class LoginData {
     var loginData = LoginData(
       message: json['message'],
       errors: parseErrors(json['errors'] as List),
-      data: json['data']
+      data: TokenInfo.fromJson(json['data'])
     );
-
     return loginData;
   }
 
