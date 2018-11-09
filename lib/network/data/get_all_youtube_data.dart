@@ -22,8 +22,6 @@ class GetAllYoutubeData {
       errors: errorsList,
     );
 
-    print(obj);
-
     return obj;
   }
 

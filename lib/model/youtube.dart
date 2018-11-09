@@ -16,7 +16,6 @@ class Youtube extends Model{
   });
 
   factory Youtube.fromJson(Map<String,dynamic> json){
-    print(json);
     var item = Youtube(
       id: json['id'],
       user: User.fromJson(json['user']),
