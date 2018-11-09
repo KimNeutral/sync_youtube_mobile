@@ -1,7 +1,7 @@
 import 'package:sync_youtube_mobile/model/model.dart';
 
 class User extends Model {
-  String id;
+  int id;
   DateTime createdAt;
   DateTime updatedAt;
   String email;
@@ -28,4 +28,11 @@ class User extends Model {
     'createdAt': createdAt,
     'updatedAt': updatedAt,
   };
+
+  @override
+  String toString() {
+    return 'User{id: $id, createdAt: $createdAt, updatedAt: $updatedAt, email: $email, name: $name}';
+  }
+
+
 }
