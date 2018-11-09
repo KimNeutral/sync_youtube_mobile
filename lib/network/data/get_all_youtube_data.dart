@@ -10,10 +10,8 @@ class GetAllYoutubeData {
   GetAllYoutubeData({this.message, this.data, this.errors});
 
   factory GetAllYoutubeData.fromJson(Map<String, dynamic> json) {
-    var data = json['data'] as List;
-    var youtubeList = Optional.of(data)
-        .map((i) => i.map((item) => Youtube.fromJson(item)).toList())
-        .orElse(List<Youtube>());
+    var data = json['data'] == null ? [] : json['data'] as List;
+    var youtubeList = data.map((item) => Youtube.fromJson(item)).toList();
 
     var errors = json['errors'] as List;
     var errorsList = parseErrors(errors);
@@ -23,6 +21,8 @@ class GetAllYoutubeData {
       data: youtubeList,
       errors: errorsList,
     );
+
+    print(obj);
 
     return obj;
   }
