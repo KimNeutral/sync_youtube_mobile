@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sync_youtube_mobile/model/token_info.dart';
 import 'package:sync_youtube_mobile/model/youtube.dart';
 import 'package:sync_youtube_mobile/network/network_manager.dart';
+import 'package:sync_youtube_mobile/common/helper/date_time_helper.dart';
 import 'dart:async';
 
 import 'package:stack_trace/stack_trace.dart';
@@ -17,7 +18,6 @@ const String CHANNEL = "com.kimneutral.io/intent";
 void main() async {
   Type type = typeOf<List<Youtube>>();
   var manager = NetworkManager();
-  print(type);
   var resp = await manager.login("01rlaeodyd@naver.com", "1234");
   if(resp.data != null) {
     tokenInfo = resp.data;
@@ -51,9 +51,14 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   static const platform = const MethodChannel(CHANNEL);
 
-  Future<List<Youtube>> youtube;
+  List<Youtube> youtube;
+  StreamController<List<Youtube>> _youtubeStreamController;
 
-  Future<List<Youtube>> loadAllYoutube() async {
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+    new GlobalKey<RefreshIndicatorState>();
+
+  Future<List<Youtube>> _loadAllYoutube() async {
     var resp = await NetworkManager().getAllYoutube(tokenInfo);
     return resp.data;
   }
@@ -61,13 +66,14 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    youtube = loadAllYoutube();
+    _youtubeStreamController = StreamController<List<Youtube>>();
+    _refreshList();
   }
 
   @override
   Widget build(BuildContext context) {
-    var futureBuilder = FutureBuilder(
-      future: youtube,
+    var streamBuilder = StreamBuilder(
+      stream: _youtubeStreamController.stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return getMainWidget(context, snapshot);
@@ -87,27 +93,33 @@ class _MainPageState extends State<MainPage> {
         preferredSize: Size.fromHeight(50.0),
       ),
       body: Center(
-        child: futureBuilder
+        child: streamBuilder
       ),
     );
   }
 
   Widget getMainWidget(BuildContext context, AsyncSnapshot snapshot) {
+    Widget child;
     if(snapshot.data.length == 0) {
-      return Text("No youtube data!");
+      child = Text("No youtube data!");
     } else {
-      return getListView(context, snapshot);
+      child = getListView(snapshot.data);
     }
+
+    return RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refreshList,
+        child: child
+    );
   }
 
-  ListView getListView(BuildContext context, AsyncSnapshot snapshot) {
-    var list = snapshot.data as List<Youtube>;
-
-    return ListView.builder(
+  Widget getListView(list) {
+    var listView =  ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, index) {
         var item = list[index];
-        print(item);
+
+        var formattedSecond = DateTimeHelper.getTimeStringFromSeconds(item.seconds);
         return embedDivider(
           InkWell(
             child: Container(
@@ -120,7 +132,7 @@ class _MainPageState extends State<MainPage> {
                   Flexible(
                     fit: FlexFit.loose,
                     child: Text(
-                      item.title,
+                      item.title + " - $formattedSecond",
                       overflow: TextOverflow.fade,
                     )
                   ),
@@ -136,6 +148,8 @@ class _MainPageState extends State<MainPage> {
         );
       }
     );
+
+    return listView;
   }
 
   Widget embedDivider(Widget child) {
@@ -157,5 +171,11 @@ class _MainPageState extends State<MainPage> {
       errorWidget: new Icon(Icons.error),
       width: 100.0,
     );
+  }
+
+  Future<Null> _refreshList() async {
+    var list = await _loadAllYoutube();
+    _youtubeStreamController.add(list);
+    return null;
   }
 }
